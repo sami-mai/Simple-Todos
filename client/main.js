@@ -1,2 +1,2 @@
 import '../imports/ui/body.js';
-import '../imports/ui/tasks.js'
+import '../imports/api/tasks.js';
