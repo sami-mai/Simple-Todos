@@ -6,8 +6,7 @@ import {
   Tasks
 } from '../api/tasks.js';
 
-import './task.html';
-// import './task.js';
+import './task.js';
 import './body.html';
 
 Template.body.helpers({
