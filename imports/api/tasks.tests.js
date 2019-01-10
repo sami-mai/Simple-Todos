@@ -90,6 +90,19 @@ if (Meteor.isServer) {
         }).count(), 1);
       });
 
+      //  test for 'tasks.setPrivate' method
+      it('can set task as Private', () => {
+
+        const taskPrivate = Meteor.server.method_handlers['tasks.setPrivate'];
+        const invocation = {
+          userId
+        };
+        taskPrivate.apply(invocation, [taskId, true]);
+        assert.equal(Tasks.find({
+          private: true
+        }).count(), 1);
+      });
+
 
     });
   });
