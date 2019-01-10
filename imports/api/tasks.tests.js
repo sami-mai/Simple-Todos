@@ -3,13 +3,13 @@
 import {
   Meteor
 } from 'meteor/meteor';
-
 import {
   Random
 } from 'meteor/random';
 import {
   assert
-} from 'meteor/practicalmeteor:chai';
+} from 'chai';
+
 import {
   Tasks
 } from './tasks.js';
@@ -17,8 +17,25 @@ import {
 if (Meteor.isServer) {
   describe('Tasks', () => {
     describe('methods', () => {
-      const userId = Random.id();
+      const username = 'sami-mai';
       let taskId;
+      let userId;
+
+      before(() => {
+        let user = Meteor.users.findOne({
+          username: username
+        });
+        if (!user) {
+          userId = Accounts.createUser({
+            'username': username,
+            'email': 'sam@mai.com',
+            'password': '0101010',
+          });
+        } else {
+          userId = user._id;
+        }
+
+      });
 
       beforeEach(() => {
         Tasks.remove({});
@@ -30,6 +47,7 @@ if (Meteor.isServer) {
         });
       });
 
+      // test 'tast.remove' method
       it('can delete owned task', () => {
         // Find the internal implementation of the task method so we can
         // test it in isolation
@@ -46,6 +64,46 @@ if (Meteor.isServer) {
         // Verify that the method does what we expected
         assert.equal(Tasks.find().count(), 0);
       });
+
+      //  test for 'tasks.insert' method
+      it('can insert task', () => {
+        let text = 'Insert new task';
+        const insertTask = Meteor.server.method_handlers['tasks.insert'];
+        // caution Error: Meteor.userId can only be invoked in method calls or publications.
+        const invocation = {
+          userId
+        };
+        insertTask.apply(invocation, [text]);
+        assert.equal(Tasks.find().count(), 2);
+      });
+
+      //  test for 'tasks.setChecked' method
+      it('can set task as checked', () => {
+
+        const checkTask = Meteor.server.method_handlers['tasks.setChecked'];
+        const invocation = {
+          userId
+        };
+        checkTask.apply(invocation, [taskId, true]);
+        assert.equal(Tasks.find({
+          checked: true
+        }).count(), 1);
+      });
+
+      //  test for 'tasks.setPrivate' method
+      it('can set task as Private', () => {
+
+        const taskPrivate = Meteor.server.method_handlers['tasks.setPrivate'];
+        const invocation = {
+          userId
+        };
+        taskPrivate.apply(invocation, [taskId, true]);
+        assert.equal(Tasks.find({
+          private: true
+        }).count(), 1);
+      });
+
+
     });
   });
 }
