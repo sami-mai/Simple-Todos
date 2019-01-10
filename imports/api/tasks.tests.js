@@ -22,13 +22,15 @@ if (Meteor.isServer) {
       let userId;
 
       before(() => {
-        let user = Meteor.users.findOne({username: username});
+        let user = Meteor.users.findOne({
+          username: username
+        });
         if (!user) {
           userId = Accounts.createUser({
             'username': username,
             'email': 'sam@mai.com',
             'password': '0101010',
-          }); 
+          });
         } else {
           userId = user._id;
         }
@@ -63,7 +65,7 @@ if (Meteor.isServer) {
         assert.equal(Tasks.find().count(), 0);
       });
 
-      //  test 'tasks.insert' method
+      //  test for 'tasks.insert' method
       it('can insert task', () => {
         let text = 'Insert new task';
         const insertTask = Meteor.server.method_handlers['tasks.insert'];
@@ -73,6 +75,19 @@ if (Meteor.isServer) {
         };
         insertTask.apply(invocation, [text]);
         assert.equal(Tasks.find().count(), 2);
+      });
+
+      //  test for 'tasks.setChecked' method
+      it('can set task as checked', () => {
+
+        const checkTask = Meteor.server.method_handlers['tasks.setChecked'];
+        const invocation = {
+          userId
+        };
+        checkTask.apply(invocation, [taskId, true]);
+        assert.equal(Tasks.find({
+          checked: true
+        }).count(), 1);
       });
 
 
