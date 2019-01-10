@@ -1,8 +1,11 @@
 import assert from "assert";
+import "../imports/api/tasks.tests.js";
 
 describe("simple-todos", function () {
   it("package.json has correct name", async function () {
-    const { name } = await import("../package.json");
+    const {
+      name
+    } = await import("../package.json");
     assert.strictEqual(name, "simple-todos");
   });
 
